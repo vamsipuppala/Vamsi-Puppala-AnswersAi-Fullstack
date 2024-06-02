@@ -1,4 +1,3 @@
-// src/components/ChangePassword.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -10,7 +9,7 @@ const ChangePassword = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state;
+  const { email } = location.state || { email: '' };
 
   const validatePassword = (password) => {
     if (password.length < 8) {

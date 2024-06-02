@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
@@ -6,13 +7,12 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Configure nodemailer
+// Configure nodemailer with app password
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
-  host: 'smpt.gmail.com',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // Use the app password here
   },
 });
 
