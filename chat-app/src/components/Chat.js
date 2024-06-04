@@ -6,11 +6,10 @@ import io from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
-const Chat = () => {
+const Chat = ({ tokenUsage, setTokenUsage }) => {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [error, setError] = useState('');
-  const [tokenUsage, setTokenUsage] = useState(0);
   const [warning, setWarning] = useState('');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -57,7 +56,7 @@ const Chat = () => {
       socket.disconnect();
       console.log('Socket disconnected');
     };
-  }, [token, navigate]);
+  }, [token, navigate, setTokenUsage]);
 
   const handleSendMessage = async () => {
     if (message.trim() === '') {
@@ -81,6 +80,7 @@ const Chat = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('tokenUsage');
     navigate('/login');
   };
 

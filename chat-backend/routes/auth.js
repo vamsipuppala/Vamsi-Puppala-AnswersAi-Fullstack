@@ -1,18 +1,18 @@
-
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const TokenUsage = require('../models/TokenUsage');
 require('dotenv').config();
 
-// Configure nodemailer with app password
+// Configure nodemailer
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Use the app password here
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -31,9 +31,9 @@ const sendOTPEmail = (email, otp) => {
   };
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log('Error sending email:', error);
+      console.log(error);
     } else {
-      console.log('Email sent:', info.response);
+      console.log('Email sent: ' + info.response);
     }
   });
 };
@@ -64,22 +64,31 @@ router.post('/register', async (req, res) => {
     res.status(500).send('Error registering user');
   }
 });
-
 router.post('/login', async (req, res) => {
+  console.log("Inside login");
   const { email, password } = req.body;
   try {
+    
     const user = await User.findOne({ email });
     if (!user) return res.status(400).send('Invalid email or password');
-
+    console.log("email verified");
     const isMatch = await bcrypt.compare(password, user.password);
+    
     if (!isMatch) return res.status(400).send('Invalid email or password');
-
+    console.log("verified password");
     if (!user.isVerified) return res.status(400).send('Please verify your email.');
-
+    console.log("it is  a verified mail");
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
-    res.json({ token });
+
+    // Fetch today's token usage
+    const today = new Date().setHours(0, 0, 0, 0);
+    const tokenUsage = await TokenUsage.findOne({ userId: user._id, date: today });
+    const tokensUsed = tokenUsage ? tokenUsage.tokensUsed : 0;
+    console.log("tokens Used "+tokensUsed);
+    res.json({ token, tokensUsed });
+   
   } catch (error) {
-    console.log('Error logging in:', error);
+    console.log(error);
     res.status(500).send('Error logging in');
   }
 });
@@ -100,7 +109,6 @@ router.post('/verify-otp', async (req, res) => {
     res.status(500).send('Error verifying OTP');
   }
 });
-
 router.post('/resend-otp', async (req, res) => {
   const { email } = req.body;
   try {
@@ -119,5 +127,4 @@ router.post('/resend-otp', async (req, res) => {
     res.status(500).send('Error resending OTP');
   }
 });
-
 module.exports = router;

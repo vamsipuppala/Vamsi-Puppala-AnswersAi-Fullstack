@@ -25,11 +25,11 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch(err => console.log(err));
 
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/chat', require('./routes/chat')(io)); // Pass io instance
+app.use('/api/chat', require('./routes/chat'));
 app.use('/api/token', require('./routes/token'));
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const serverInstance = server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -38,4 +38,4 @@ io.on('connection', (socket) => {
   });
 });
 
-module.exports = io; // Export the socket.io instance
+module.exports = { app, serverInstance };

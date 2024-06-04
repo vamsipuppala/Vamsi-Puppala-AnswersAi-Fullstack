@@ -1,10 +1,9 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
 
-const Login = () => {
+const Login = ({ setTokenUsage }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,6 +26,8 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('tokenUsage', response.data.tokensUsed); // Store token usage in local storage
+      setTokenUsage(response.data.tokensUsed); // Set token usage
       navigate('/chat');
     } catch (error) {
       if (error.response && error.response.status === 400) {
