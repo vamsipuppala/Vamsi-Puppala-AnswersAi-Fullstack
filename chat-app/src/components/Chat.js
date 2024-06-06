@@ -62,15 +62,15 @@ const Chat = ({ tokenUsage, setTokenUsage }) => {
     if (message.trim() === '') {
       return;
     }
-
+    console.log('Message sent: here: ' + token);
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', { message }, {
+      const response = await axios.post('http://localhost:5000/api/chat/', { message }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       console.log('Message sent:', response.data);
-      socket.emit('message', response.data);
+      setChatHistory((prev) => [...prev, { message: response.data.message, response: response.data.response }]);
       setMessage('');
     } catch (err) {
       console.error('Error sending message:', err);

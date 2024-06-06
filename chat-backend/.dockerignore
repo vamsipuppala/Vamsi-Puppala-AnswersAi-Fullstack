@@ -5,8 +5,7 @@ node_modules
 logs
 *.log
 
-# Ignore environment variables
-.env
+
 
 # Ignore test coverage files
 coverage

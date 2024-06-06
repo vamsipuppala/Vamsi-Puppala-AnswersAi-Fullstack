@@ -24,12 +24,15 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
 
+// Use the chat route with socket.io instance
+const chatRoutes = require('./routes/chat')(io);
+app.use('/api/chat', chatRoutes);
+
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/chat', require('./routes/chat'));
 app.use('/api/token', require('./routes/token'));
 
 const PORT = process.env.PORT || 5000;
-const serverInstance = server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -38,4 +41,4 @@ io.on('connection', (socket) => {
   });
 });
 
-module.exports = { app, serverInstance };
+module.exports = { app, server };

@@ -1,7 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
-
+console.log('ANTHROPIC_API_KEY:', process.env.ANTHROPIC_API_KEY); 
 const getAnthropicResponse = async (message) => {
+  console.log('ANTHROPIC_API_KEY:I', process.env.ANTHROPIC_API_KEY); 
   try {
     const response = await axios.post(
       'https://api.anthropic.com/v1/messages',

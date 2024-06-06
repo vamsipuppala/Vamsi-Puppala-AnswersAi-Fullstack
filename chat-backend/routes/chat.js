@@ -8,9 +8,11 @@ require('dotenv').config();
 
 module.exports = (io) => {
   const router = express.Router();
+  console.log("inside chat");
 
   // Middleware to authenticate JWT
   const authenticateJWT = (req, res, next) => {
+    console.log("here");
     const authHeader = req.header('Authorization');
     if (!authHeader) {
       console.log('Access denied. No token provided.');
@@ -35,9 +37,10 @@ module.exports = (io) => {
 
   // Chat endpoint
   router.post('/', authenticateJWT, async (req, res) => {
+    console.log("Inside /");
+
     const { message } = req.body;
     console.log(`Received message: ${message}`);
-
     try {
       const user = await User.findById(req.user.id);
       if (!user) {
@@ -94,6 +97,8 @@ module.exports = (io) => {
 
   // Endpoint to get current token usage
   router.get('/token-usage', authenticateJWT, async (req, res) => {
+    console.log("inside token usage");
+
     try {
       const today = new Date().setHours(0, 0, 0, 0);
       const tokenUsage = await TokenUsage.findOne({ userId: req.user.id, date: today });
@@ -103,6 +108,10 @@ module.exports = (io) => {
       console.log('Error fetching token usage:', error);
       res.status(500).send('Error fetching token usage');
     }
+  });
+
+  router.get('/ping', authenticateJWT, async (req, res) => {
+      res.status(200).send('working');
   });
 
   return router;
